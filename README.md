@@ -10,7 +10,8 @@ PETMATCH é uma plataforma web desenvolvida como projeto para a disciplina de Pr
 
 O sistema permite o cadastro de animais, a busca por filtros específicos, o registro de adotantes e um fluxo simplificado para solicitação e aprovação de adoções, além de um painel administrativo para gerenciamento.
 
-**Status:** Desenvolvimento concluído para o escopo acadêmico.
+**Status:** Em andamento.
+**Link para o vídeo:** https://youtu.be/bIuTHvS6QOU
 
 ## ✨ Funcionalidades Principais
 
