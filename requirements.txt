@@ -1,0 +1,11 @@
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-WTF
+Flask-Login
+# Flask-Bcrypt # Removido por depender de bcrypt (nativo)
+# Pillow # Removido por conter código nativo
+Flask-Mail
+python-dotenv
+# psycopg2-binary # Removido por conter código nativo (usaremos SQLite)
+

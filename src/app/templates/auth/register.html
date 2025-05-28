@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-container">
+    <h2>Crie sua Conta</h2>
+    <p>Registre-se para começar a encontrar seu novo melhor amigo!</p>
+
+    <form action="" method="post" novalidate class="auth-form">
+        {{ form.hidden_tag() }} {# CSRF token #}
+
+        <div class="form-group">
+            {{ form.nome.label }}<br>
+            {{ form.nome(size=32, class_="form-control") }}<br>
+            {% for error in form.nome.errors %}
+            <span class="form-error">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.email.label }}<br>
+            {{ form.email(size=32, class_="form-control") }}<br>
+            {% for error in form.email.errors %}
+            <span class="form-error">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.telefone.label }}<br>
+            {{ form.telefone(size=15, class_="form-control") }}<br>
+            {% for error in form.telefone.errors %}
+            <span class="form-error">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.endereco.label }}<br>
+            {{ form.endereco(rows=3, class_="form-control") }}<br>
+            {% for error in form.endereco.errors %}
+            <span class="form-error">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.password.label }}<br>
+            {{ form.password(size=32, class_="form-control") }}<br>
+            {% for error in form.password.errors %}
+            <span class="form-error">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.password2.label }}<br>
+            {{ form.password2(size=32, class_="form-control") }}<br>
+            {% for error in form.password2.errors %}
+            <span class="form-error">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.submit(class_="btn btn-primary btn-block") }}
+        </div>
+    </form>
+
+    <p class="auth-switch">
+        Já tem uma conta? 
+        <a href="{{ url_for("auth.login") }}">Faça login aqui!</a>
+    </p>
+</div>
+
+{# Reutiliza o CSS do login.html, já que a classe .auth-container é a mesma #}
+<style>
+.auth-container {
+    max-width: 550px; /* Um pouco mais largo para o registro */
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    text-align: center;
+}
+.auth-container h2 {
+    margin-bottom: 0.5rem;
+    color: var(--rosa-acento);
+}
+.auth-container p {
+    margin-bottom: 1.5rem;
+    color: var(--marrom-texto);
+}
+.auth-form .form-group {
+    text-align: left;
+    margin-bottom: 1rem;
+}
+.btn-block {
+    width: 100%;
+    padding: 0.9rem;
+    font-size: 1.1rem;
+}
+.auth-switch {
+    margin-top: 2rem;
+}
+</style>
+{% endblock %}
+

@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="list-pets-container">
+    <h2>Encontre seu Novo Amigo!</h2>
+
+    {# Formulário de Filtros #}
+    <form method="GET" action="{{ url_for("pets.list_pets") }}" class="filter-form">
+        <div class="filter-grid">
+            <div class="form-group">
+                <label for="especie">Espécie:</label>
+                <select name="especie" id="especie" class="form-control">
+                    <option value="">Todas</option>
+                    {% for value, display in especie_choices %}
+                        <option value="{{ value }}" {% if current_filters.especie == value %}selected{% endif %}>{{ display }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="porte">Porte:</label>
+                <select name="porte" id="porte" class="form-control">
+                    <option value="">Todos</option>
+                    {% for value, display in porte_choices %}
+                        <option value="{{ value }}" {% if current_filters.porte == value %}selected{% endif %}>{{ display }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sexo">Sexo:</label>
+                <select name="sexo" id="sexo" class="form-control">
+                    <option value="">Todos</option>
+                    {% for value, display in sexo_choices %}
+                        <option value="{{ value }}" {% if current_filters.sexo == value %}selected{% endif %}>{{ display }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="idade_min">Idade Mín. (meses):</label>
+                <input type="number" name="idade_min" id="idade_min" min="1" value="{{ current_filters.idade_min if current_filters.idade_min is not none else "" }}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="idade_max">Idade Máx. (meses):</label>
+                <input type="number" name="idade_max" id="idade_max" min="1" value="{{ current_filters.idade_max if current_filters.idade_max is not none else "" }}" class="form-control">
+            </div>
+            <div class="form-group filter-actions">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+                <a href="{{ url_for("pets.list_pets") }}" class="btn btn-secondary">Limpar</a>
+            </div>
+        </div>
+    </form>
+
+    {# Adicionar botão para Admin adicionar novo pet #}
+    {% if current_user.is_authenticated and current_user.is_admin %}
+        <div class="admin-actions">
+            <a href="{{ url_for("pets.add_pet") }}" class="btn btn-success">+ Adicionar Novo Pet</a>
+        </div>
+    {% endif %}
+
+    {# Listagem de Pets #}
+    {% if pets %}
+        <div class="pet-list">
+            {% for pet in pets %}
+                <div class="pet-card">
+                    <a href="{{ url_for("pets.pet_details", pet_id=pet.id) }}">
+                        {% if pet.foto_url %}
+                            <img src="{{ pet.foto_url }}" alt="Foto de {{ pet.nome }}">
+                        {% else %}
+                            <img src="https://via.placeholder.com/300x180.png?text=Sem+Foto" alt="Sem foto">
+                        {% endif %}
+                    </a>
+                    <div class="pet-card-content">
+                        <h3><a href="{{ url_for("pets.pet_details", pet_id=pet.id) }}">{{ pet.nome }}</a></h3>
+                        <p>{{ pet.especie }} - {{ pet.raca }}</p>
+                        <p>{{ pet.sexo }}, {{ pet.idade }} meses, Porte {{ pet.porte }}</p>
+                        <p class="description">{{ pet.descricao | truncate(100) }}</p> {# Limita descrição no card #}
+                        <a href="{{ url_for("pets.pet_details", pet_id=pet.id) }}" class="btn btn-primary">Ver Detalhes</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-results">Nenhum pet encontrado com os filtros selecionados. Tente ajustar sua busca!</p>
+    {% endif %}
+</div>
+
+<style>
+.list-pets-container h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--rosa-acento);
+}
+.filter-form {
+    background-color: var(--azul-fundo-leve);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    align-items: end; /* Alinha itens na base */
+}
+.filter-form .form-group {
+    margin-bottom: 0;
+}
+.filter-form label {
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+.filter-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center; /* Alinha botões verticalmente */
+    padding-top: 1.3rem; /* Espaço acima dos botões */
+}
+.admin-actions {
+    text-align: right;
+    margin-bottom: 1.5rem;
+}
+.btn-success {
+    background-color: #28a745;
+    color: white;
+}
+.btn-success:hover {
+    background-color: #218838;
+}
+.no-results {
+    text-align: center;
+    margin-top: 3rem;
+    font-style: italic;
+    color: #666;
+}
+/* Estilos .pet-list e .pet-card já definidos no style.css global */
+</style>
+
+{% endblock %}
+

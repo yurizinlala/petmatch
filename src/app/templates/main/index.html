@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Bem-vindo ao PETMATCH{% endblock %}
+
+{% block content %}
+<div class="hero-section" style="text-align: center; padding: 4rem 1rem; background-color: #f0e4d7; border-radius: 8px; margin-bottom: 2rem;">
+    <h1 style="font-family: 'Sour Gummy', cursive; font-size: 3rem; color: #7a5c58; margin-bottom: 1rem;">Encontre seu novo melhor amigo!</h1>
+    <p style="font-size: 1.2rem; color: #5c4b48; margin-bottom: 2rem;">PETMATCH conecta você a cães e gatos adoráveis esperando por um lar.</p>
+    <a href="{{ url_for('pets.list_pets') }}" class="btn btn-primary" style="background-color: #ffb347; color: white; padding: 0.8rem 1.5rem; text-decoration: none; border-radius: 25px; font-weight: bold; transition: background-color 0.3s ease;">Ver Pets Disponíveis</a>
+</div>
+
+<div class="features-section" style="display: flex; justify-content: space-around; gap: 1rem; text-align: center;">
+    <div class="feature" style="background-color: #e0f2f7; padding: 1.5rem; border-radius: 8px; flex: 1;">
+        <h3 style="color: #007bff; margin-bottom: 0.5rem;">Busca Fácil</h3>
+        <p>Filtre por espécie, porte, idade e mais para encontrar o pet ideal.</p>
+    </div>
+    <div class="feature" style="background-color: #e0f2f7; padding: 1.5rem; border-radius: 8px; flex: 1;">
+        <h3 style="color: #007bff; margin-bottom: 0.5rem;">Processo Simples</h3>
+        <p>Envie seu pedido de adoção com poucos cliques.</p>
+    </div>
+    <div class="feature" style="background-color: #e0f2f7; padding: 1.5rem; border-radius: 8px; flex: 1;">
+        <h3 style="color: #007bff; margin-bottom: 0.5rem;">Adoção Consciente</h3>
+        <p>Ajudamos a garantir um final feliz para pets e adotantes.</p>
+    </div>
+</div>
+
+<!-- Adicionar a diretiva @font-face para Sour Gummy no style.css depois -->
+
+{% endblock %}
+
