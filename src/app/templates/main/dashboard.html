@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1>Meu Painel</h1>
+    
+    <div class="dashboard-section user-info">
+        <h2>Informações Pessoais</h2>
+        <div class="user-info-grid">
+            <div class="info-item">
+                <span class="info-label">Nome:</span>
+                <span class="info-value">{{ current_user.nome_completo }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Email:</span>
+                <span class="info-value">{{ current_user.email }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Telefone:</span>
+                <span class="info-value">{{ current_user.telefone or "Não informado" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Endereço:</span>
+                <span class="info-value">{{ current_user.endereco or "Não informado" }}</span>
+            </div>
+        </div>
+        <div class="dashboard-actions">
+            <a href="#" class="btn btn-secondary"><i class="bi bi-pencil-fill"></i> Editar Perfil</a>
+        </div>
+    </div>
+
+    <div class="dashboard-section adoptions">
+        <h2>Minhas Adoções</h2>
+        
+        {% if total_adocoes == 0 %}
+            <div class="empty-state">
+                <i class="bi bi-heart"></i>
+                <p>Você ainda não solicitou nenhuma adoção.</p>
+                <a href="{{ url_for('pets.list_pets') }}" class="btn btn-primary">Encontrar um Pet</a>
+            </div>
+        {% else %}
+            <div class="adoption-tabs">
+                <button class="tab-btn active" data-tab="pending">Pendentes ({{ adocoes_pendentes|length }})</button>
+                <button class="tab-btn" data-tab="approved">Aprovadas ({{ adocoes_aprovadas|length }})</button>
+                <button class="tab-btn" data-tab="rejected">Rejeitadas ({{ adocoes_rejeitadas|length }})</button>
+            </div>
+
+            <div class="tab-content active" id="pending-tab">
+                {% if adocoes_pendentes %}
+                    <div class="adoption-cards">
+                        {% for adocao in adocoes_pendentes %}
+                            <div class="adoption-card">
+                                <div class="adoption-status pending">
+                                    <i class="bi bi-hourglass-split"></i> Pendente
+                                </div>
+                                <div class="adoption-pet">
+                                    {% if adocao.pet.foto %}
+                                        <img src="{{ url_for('static', filename='uploads/' + adocao.pet.foto) }}" alt="{{ adocao.pet.nome }}">
+                                    {% else %}
+                                        <img src="https://via.placeholder.com/100x100.png?text=Sem+Foto" alt="Sem foto">
+                                    {% endif %}
+                                    <div class="pet-info">
+                                        <h3>{{ adocao.pet.nome }}</h3>
+                                        <p>{{ adocao.pet.especie }} - {{ adocao.pet.raca }}</p>
+                                    </div>
+                                </div>
+                                <div class="adoption-details">
+                                    <p><strong>Data do pedido:</strong> {{ adocao.data_pedido.strftime('%d/%m/%Y') }}</p>
+                                    <p><strong>Status:</strong> Aguardando aprovação</p>
+                                </div>
+                                <div class="adoption-actions">
+                                    <a href="{{ url_for('pets.pet_details', pet_id=adocao.pet.id) }}" class="btn btn-secondary">Ver Pet</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="no-results">Você não possui pedidos de adoção pendentes.</p>
+                {% endif %}
+            </div>
+
+            <div class="tab-content" id="approved-tab">
+                {% if adocoes_aprovadas %}
+                    <div class="adoption-cards">
+                        {% for adocao in adocoes_aprovadas %}
+                            <div class="adoption-card">
+                                <div class="adoption-status approved">
+                                    <i class="bi bi-check-circle-fill"></i> Aprovada
+                                </div>
+                                <div class="adoption-pet">
+                                    {% if adocao.pet.foto %}
+                                        <img src="{{ url_for('static', filename='uploads/' + adocao.pet.foto) }}" alt="{{ adocao.pet.nome }}">
+                                    {% else %}
+                                        <img src="https://via.placeholder.com/100x100.png?text=Sem+Foto" alt="Sem foto">
+                                    {% endif %}
+                                    <div class="pet-info">
+                                        <h3>{{ adocao.pet.nome }}</h3>
+                                        <p>{{ adocao.pet.especie }} - {{ adocao.pet.raca }}</p>
+                                    </div>
+                                </div>
+                                <div class="adoption-details">
+                                    <p><strong>Data do pedido:</strong> {{ adocao.data_pedido.strftime('%d/%m/%Y') }}</p>
+                                    <p><strong>Data da aprovação:</strong> {{ adocao.data_decisao.strftime('%d/%m/%Y') }}</p>
+                                </div>
+                                <div class="adoption-actions">
+                                    <a href="{{ url_for('pets.pet_details', pet_id=adocao.pet.id) }}" class="btn btn-secondary">Ver Pet</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="no-results">Você não possui pedidos de adoção aprovados.</p>
+                {% endif %}
+            </div>
+
+            <div class="tab-content" id="rejected-tab">
+                {% if adocoes_rejeitadas %}
+                    <div class="adoption-cards">
+                        {% for adocao in adocoes_rejeitadas %}
+                            <div class="adoption-card">
+                                <div class="adoption-status rejected">
+                                    <i class="bi bi-x-circle-fill"></i> Rejeitada
+                                </div>
+                                <div class="adoption-pet">
+                                    {% if adocao.pet.foto %}
+                                        <img src="{{ url_for('static', filename='uploads/' + adocao.pet.foto) }}" alt="{{ adocao.pet.nome }}">
+                                    {% else %}
+                                        <img src="https://via.placeholder.com/100x100.png?text=Sem+Foto" alt="Sem foto">
+                                    {% endif %}
+                                    <div class="pet-info">
+                                        <h3>{{ adocao.pet.nome }}</h3>
+                                        <p>{{ adocao.pet.especie }} - {{ adocao.pet.raca }}</p>
+                                    </div>
+                                </div>
+                                <div class="adoption-details">
+                                    <p><strong>Data do pedido:</strong> {{ adocao.data_pedido.strftime('%d/%m/%Y') }}</p>
+                                    <p><strong>Data da rejeição:</strong> {{ adocao.data_decisao.strftime('%d/%m/%Y') }}</p>
+                                </div>
+                                <div class="adoption-actions">
+                                    <a href="{{ url_for('pets.pet_details', pet_id=adocao.pet.id) }}" class="btn btn-secondary">Ver Pet</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="no-results">Você não possui pedidos de adoção rejeitados.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.dashboard-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.dashboard-container h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--text-dark);
+}
+
+.dashboard-section {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard-section h2 {
+    color: var(--blue-dark);
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    border-bottom: 2px solid var(--blue-light);
+    padding-bottom: 0.5rem;
+}
+
+/* User Info Section */
+.user-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-label {
+    font-weight: bold;
+    color: var(--grey-dark);
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+.info-value {
+    font-size: 1.1rem;
+}
+
+.dashboard-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Adoptions Section */
+.adoption-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--grey-medium);
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    font-family: var(--font-body);
+    font-weight: 700;
+    color: var(--grey-dark);
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s;
+}
+
+.tab-btn:hover {
+    color: var(--blue-dark);
+}
+
+.tab-btn.active {
+    color: var(--blue-dark);
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--blue-dark);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+.adoption-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.adoption-card {
+    background-color: var(--blue-lightest);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    position: relative;
+}
+
+.adoption-status {
+    padding: 0.5rem 1rem;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.adoption-status.pending {
+    background-color: var(--warning);
+    color: #795548;
+}
+
+.adoption-status.approved {
+    background-color: var(--success);
+    color: #1B5E20;
+}
+
+.adoption-status.rejected {
+    background-color: var(--danger);
+    color: #B71C1C;
+}
+
+.adoption-pet {
+    display: flex;
+    padding: 1rem;
+    background-color: white;
+    border-bottom: 1px solid var(--grey-medium);
+}
+
+.adoption-pet img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.pet-info {
+    margin-left: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.pet-info h3 {
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.pet-info p {
+    margin: 0.3rem 0 0;
+    color: var(--grey-dark);
+    font-size: 0.9rem;
+}
+
+.adoption-details {
+    padding: 1rem;
+    background-color: white;
+}
+
+.adoption-details p {
+    margin: 0.5rem 0;
+    font-size: 0.95rem;
+}
+
+.adoption-actions {
+    padding: 1rem;
+    background-color: white;
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid var(--grey-medium);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: var(--blue-light);
+    margin-bottom: 1rem;
+}
+
+.empty-state p {
+    font-size: 1.2rem;
+    color: var(--grey-dark);
+    margin-bottom: 1.5rem;
+}
+
+.no-results {
+    text-align: center;
+    padding: 2rem;
+    color: var(--grey-dark);
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .adoption-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .tab-btn {
+        flex-grow: 1;
+        text-align: center;
+        padding: 0.8rem 0.5rem;
+    }
+    
+    .adoption-cards {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching functionality
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all buttons and contents
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked button
+            this.classList.add('active');
+            
+            // Show corresponding content
+            const tabId = this.getAttribute('data-tab');
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+        });
+    });
+});
+</script>
+{% endblock %}

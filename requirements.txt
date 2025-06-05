@@ -1,0 +1,13 @@
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-Login
+Flask-WTF
+python-dotenv
+email-validator # Adicionado para validação de email no WTForms
+Werkzeug # Já é dependência do Flask, mas bom explicitar
+
+
+email_validator
+
+Flask-Mail
