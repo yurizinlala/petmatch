@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Bem-vindo ao PETMATCH{% endblock %}
+
+{% block content %}
+
+{# --- Hero Section --- #}
+<section class="hero-section" style="background-color: var(--blue-light); padding: 4rem 1rem; text-align: center; border-radius: var(--border-radius); margin-bottom: 3rem;">
+    <h1 style="font-size: 3.5em; color: var(--text-dark); margin-bottom: 1rem;">Encontre o Amor de Quatro Patas!</h1>
+    <p style="font-size: 1.3em; color: var(--text-dark); max-width: 700px; margin: 0 auto 2rem auto; opacity: 0.9;">O PETMATCH conecta corações: o seu e o de um cão ou gato incrível que espera ansiosamente por um lar cheio de carinho e alegria.</p>
+    <a href="{{ url_for('pets.list_pets') }}" class="btn btn-primary" style="font-size: 1.1em;">Ver Pets Disponíveis</a>
+</section>
+
+{# --- Features Section --- #}
+<section class="features-section" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 3rem; text-align: center;">
+    <div class="feature-item" style="background-color: var(--white); padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--box-shadow);">
+        <img src="{{ url_for('static', filename='images/icon_search.svg') }}" alt="Ícone de busca" style="width: 60px; height: 60px; margin-bottom: 1rem; opacity: 0.8;"> {# Placeholder: Criar ou baixar ícones SVG #}
+        <h3 style="color: var(--blue-darkest); margin-bottom: 0.5rem;">Busca Inteligente</h3>
+        <p>Use nossos filtros detalhados por espécie, porte, idade, sexo e até raça para encontrar o companheiro perfeito para seu estilo de vida.</p>
+    </div>
+    <div class="feature-item" style="background-color: var(--white); padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--box-shadow);">
+        <img src="{{ url_for('static', filename='images/icon_heart.svg') }}" alt="Ícone de coração" style="width: 60px; height: 60px; margin-bottom: 1rem; opacity: 0.8;"> {# Placeholder: Criar ou baixar ícones SVG #}
+        <h3 style="color: var(--blue-darkest); margin-bottom: 0.5rem;">Processo Descomplicado</h3>
+        <p>Apaixonou-se por um pet? Inicie o processo de adoção com poucos cliques. Nossa equipe analisa tudo com cuidado e rapidez.</p>
+    </div>
+    <div class="feature-item" style="background-color: var(--white); padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--box-shadow);">
+        <img src="{{ url_for('static', filename='images/icon_shield.svg') }}" alt="Ícone de escudo" style="width: 60px; height: 60px; margin-bottom: 1rem; opacity: 0.8;"> {# Placeholder: Criar ou baixar ícones SVG #}
+        <h3 style="color: var(--blue-darkest); margin-bottom: 0.5rem;">Adoção Responsável</h3>
+        <p>Promovemos a adoção consciente, buscando lares seguros e amorosos, garantindo um final feliz para pets e adotantes.</p>
+    </div>
+</section>
+
+{# --- Quem Somos Section --- #}
+<section class="about-section" style="background-color: var(--white); padding: 3rem 2rem; border-radius: var(--border-radius); box-shadow: var(--box-shadow); margin-bottom: 3rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center;">
+    <div>
+        <h2>Quem Somos</h2>
+        <p style="margin-bottom: 1rem;">O PETMATCH nasceu da paixão por animais e do desejo de facilitar o encontro entre pets que precisam de um lar e pessoas dispostas a oferecer amor e cuidado. Somos uma plataforma criada por estudantes de Ciência da Computação da UERN, dedicada a tornar a adoção uma experiência mais simples, segura e feliz.</p>
+        <p>Acreditamos que todo animal merece uma segunda chance e que a tecnologia pode ser uma poderosa ferramenta para conectar vidas. Nosso objetivo é diminuir o número de animais abandonados, promovendo a adoção responsável e construindo uma comunidade engajada na causa animal.</p>
+    </div>
+    <div>
+        {# Placeholder para uma imagem representativa #}
+        <img src="{{ url_for('static', filename='images/team_placeholder.jpg') }}" alt="Ilustração de pessoas com pets" style="border-radius: var(--border-radius); width: 100%; height: auto;">
+    </div>
+</section>
+
+{# --- Call to Action Section --- #}
+<section class="cta-section" style="background-color: var(--blue-medium); color: var(--white); padding: 3rem 1rem; text-align: center; border-radius: var(--border-radius);">
+    <h2 style="color: var(--white);">Pronto para Mudar uma Vida?</h2>
+    <p style="font-size: 1.1em; max-width: 600px; margin: 0 auto 1.5rem auto; opacity: 0.95;">Milhares de olhares cheios de esperança aguardam por você. Dê o primeiro passo para encontrar seu novo amigo fiel.</p>
+    <a href="{{ url_for('pets.list_pets') }}" class="btn btn-secondary" style="background-color: var(--white); color: var(--blue-darkest); font-size: 1.1em;">Quero Adotar!</a>
+</section>
+
+{% endblock %}
+

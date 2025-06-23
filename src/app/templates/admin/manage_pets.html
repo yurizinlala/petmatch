@@ -1,0 +1,364 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-panel-container">
+    <h1>Gerenciamento de Pets</h1>
+    
+    <div class="admin-actions">
+        <a href="{{ url_for('pets.add_pet') }}" class="btn btn-success">
+            <i class="bi bi-plus-circle-fill"></i> Adicionar Novo Pet
+        </a>
+    </div>
+    
+    <div class="filter-section">
+        <h3>Filtros</h3>
+        <form method="GET" action="{{ url_for('admin.manage_pets') }}" class="filter-form">
+            <div class="filter-grid">
+                <div class="form-group">
+                    <label for="status">Status:</label>
+                    <select name="status" id="status" class="form-control">
+                        <option value="">Todos</option>
+                        <option value="disponível" {% if current_filters.status == "disponível" %}selected{% endif %}>Disponível</option>
+                        <option value="em processo" {% if current_filters.status == "em processo" %}selected{% endif %}>Em Processo</option>
+                        <option value="adotado" {% if current_filters.status == "adotado" %}selected{% endif %}>Adotado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="especie">Espécie:</label>
+                    <select name="especie" id="especie" class="form-control">
+                        <option value="">Todas</option>
+                        {% for value, display in especie_choices %}
+                            <option value="{{ value }}" {% if current_filters.especie == value %}selected{% endif %}>{{ display }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group filter-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Filtrar
+                    </button>
+                    <a href="{{ url_for('admin.manage_pets') }}" class="btn btn-secondary">Limpar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if pets %}
+        <div class="pets-table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Foto</th>
+                        <th>Nome</th>
+                        <th>Espécie</th>
+                        <th>Raça</th>
+                        <th>Idade</th>
+                        <th>Status</th>
+                        <th>Data Cadastro</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pet in pets %}
+                        <tr>
+                            <td data-label="ID">{{ pet.id }}</td>
+                            <td data-label="Foto" class="pet-photo-cell">
+                                {% if pet.foto %}
+                                    <img src="{{ url_for('static', filename='uploads/' + pet.foto) }}" alt="{{ pet.nome }}" class="pet-thumbnail">
+                                {% else %}
+                                    <div class="no-photo">Sem foto</div>
+                                {% endif %}
+                            </td>
+                            <td data-label="Nome">{{ pet.nome }}</td>
+                            <td data-label="Espécie">{{ pet.especie }}</td>
+                            <td data-label="Raça">{{ pet.raca }}</td>
+                            <td data-label="Idade">{{ pet.idade }} meses</td>
+                            <td data-label="Status">
+                                <span class="pet-status-badge status-{{ pet.status | lower | replace(" ", "-") }}">{{ pet.status }}</span>
+                            </td>
+                            <td data-label="Data Cadastro">{{ pet.data_cadastro.strftime('%d/%m/%Y') }}</td>
+                            <td data-label="Ações" class="actions-cell">
+                                <div class="action-buttons">
+                                    <a href="{{ url_for('pets.pet_details', pet_id=pet.id) }}" class="btn btn-info btn-sm" title="Ver Detalhes">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </a>
+                                    <a href="{{ url_for('pets.edit_pet', pet_id=pet.id) }}" class="btn btn-primary btn-sm" title="Editar">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+                                    <form action="{{ url_for('pets.delete_pet', pet_id=pet.id) }}" method="post" style="display: inline;" 
+                                        onsubmit="return confirm('Tem certeza que deseja remover o pet {{ pet.nome }}?');">
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Remover" 
+                                                {% if pet.status == "em processo" %}disabled{% endif %}>
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle-fill"></i> Nenhum pet encontrado com os filtros selecionados.
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.admin-panel-container {
+    background-color: var(--white);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 2rem;
+}
+
+.admin-panel-container h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
+}
+
+.admin-actions {
+    margin-bottom: 1.5rem;
+    text-align: right;
+}
+
+.filter-section {
+    background-color: var(--blue-lightest);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 2rem;
+}
+
+.filter-section h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    align-items: end;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.admin-table th, 
+.admin-table td {
+    padding: 0.8rem;
+    text-align: left;
+    border-bottom: 1px solid var(--grey-medium);
+}
+
+.admin-table th {
+    background-color: var(--blue-light);
+    color: var(--text-dark);
+    font-weight: bold;
+}
+
+.admin-table tbody tr:hover {
+    background-color: var(--blue-lightest);
+}
+
+.pet-thumbnail {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.no-photo {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--grey-medium);
+    color: var(--grey-dark);
+    font-size: 0.7rem;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.pet-status-badge {
+    display: inline-block;
+    padding: 0.3em 0.8em;
+    font-size: 0.8rem;
+    font-weight: bold;
+    border-radius: 15px;
+    color: white;
+}
+
+.status-disponível {
+    background-color: var(--success);
+    color: #1B5E20;
+}
+
+.status-em-processo {
+    background-color: var(--warning);
+    color: #795548;
+}
+
+.status-adotado {
+    background-color: var(--grey-dark);
+    color: white;
+}
+
+.actions-cell {
+    white-space: nowrap;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.btn-info {
+    background-color: var(--info);
+    color: var(--text-dark);
+}
+
+.btn-info:hover {
+    background-color: #64B5F6;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.alert i {
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.alert-info {
+    background-color: var(--info-light);
+    color: var(--info-dark);
+    border: 1px solid var(--info);
+}
+
+/* Responsividade para tabelas em dispositivos móveis */
+@media (max-width: 992px) {
+    .admin-table, .admin-table thead, .admin-table tbody, .admin-table th, .admin-table td, .admin-table tr {
+        display: block;
+    }
+    
+    .admin-table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    
+    .admin-table tr {
+        border: 1px solid var(--grey-medium);
+        margin-bottom: 1rem;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+    }
+    
+    .admin-table td {
+        border: none;
+        border-bottom: 1px solid var(--grey-light);
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+    }
+    
+    .admin-table td:before {
+        position: absolute;
+        top: 0.8rem;
+        left: 0.8rem;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        content: attr(data-label);
+    }
+    
+    .pet-photo-cell {
+        text-align: center;
+        padding-left: 0.8rem;
+    }
+    
+    .pet-photo-cell:before {
+        display: none;
+    }
+    
+    .pet-thumbnail, .no-photo {
+        margin: 0 auto;
+    }
+    
+    .actions-cell {
+        text-align: center;
+        padding-left: 0.8rem;
+    }
+    
+    .actions-cell:before {
+        display: none;
+    }
+    
+    .action-buttons {
+        justify-content: center;
+    }
+    
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.admin-panel-container {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+.btn {
+    transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+</style>
+{% endblock %}

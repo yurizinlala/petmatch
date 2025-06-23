@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-container">
+    {# Usamos a variável legend passada pela rota para diferenciar Adicionar/Editar #}
+    <h2>{{ legend }}</h2>
+
+    <form method="POST" action="" novalidate class="styled-form">
+        {{ form.hidden_tag() }} {# CSRF token #}
+
+        <div class="form-group">
+            {{ form.nome.label }}<br>
+            {{ form.nome(class_="form-control") }}<br>
+            {% for error in form.nome.errors %}
+            <span class="form-error">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-row">
+            <div class="form-group form-group-half">
+                {{ form.especie.label }}<br>
+                {{ form.especie(class_="form-control") }}<br>
+                {% for error in form.especie.errors %}
+                <span class="form-error">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group form-group-half">
+                {{ form.raca.label }}<br>
+                {{ form.raca(class_="form-control") }}<br>
+                {% for error in form.raca.errors %}
+                <span class="form-error">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group form-group-third">
+                {{ form.idade.label }}<br>
+                {{ form.idade(class_="form-control") }}<br>
+                {% for error in form.idade.errors %}
+                <span class="form-error">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group form-group-third">
+                {{ form.porte.label }}<br>
+                {{ form.porte(class_="form-control") }}<br>
+                {% for error in form.porte.errors %}
+                <span class="form-error">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group form-group-third">
+                {{ form.sexo.label }}<br>
+                {{ form.sexo(class_="form-control") }}<br>
+                {% for error in form.sexo.errors %}
+                <span class="form-error">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            {{ form.descricao.label }}<br>
+            {{ form.descricao(rows=4, class_="form-control") }}<br>
+            {% for error in form.descricao.errors %}
+            <span class="form-error">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        <div class="form-group">
+            {{ form.foto.label }} (Opcional)<br>
+            {{ form.foto(class_="form-control", placeholder="https://exemplo.com/imagem.jpg") }}<br>
+            {% for error in form.foto.errors %}
+            <span class="form-error">[{{ error }}]</span>
+            {% endfor %}
+        </div>
+
+        {# Campo de upload de arquivo (comentado por enquanto) #}
+        {# <div class="form-group">
+            {{ form.foto.label }}<br>
+            {{ form.foto(class_="form-control-file") }}
+            {% if pet and pet.foto_url %}
+                <p>Foto atual: <a href="{{ pet.foto_url }}" target="_blank">Ver</a></p>
+            {% endif %}
+            {% for error in form.foto.errors %}
+            <span class="form-error">[{{ error }}]</span>
+            {% endfor %}
+        </div> #}
+
+        <div class="form-group form-actions">
+            {{ form.submit(class_="btn btn-primary") }}
+            <a href="{{ url_for("pets.list_pets") }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<style>
+.form-container {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--rosa-acento);
+}
+.styled-form .form-group {
+    margin-bottom: 1.2rem;
+}
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.form-group-half {
+    flex: 1 1 calc(50% - 0.5rem);
+}
+.form-group-third {
+    flex: 1 1 calc(33.333% - 0.7rem);
+}
+.form-actions {
+    margin-top: 2rem;
+    text-align: right;
+}
+.form-actions .btn {
+    margin-left: 0.5rem;
+}
+
+/* Ajustes para responsividade do formulário */
+@media (max-width: 600px) {
+    .form-group-half,
+    .form-group-third {
+        flex-basis: 100%;
+    }
+}
+</style>
+{% endblock %}
+

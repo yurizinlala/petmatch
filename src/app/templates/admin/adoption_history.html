@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-panel-container">
+    <h2>Histórico de Adoções</h2>
+    
+    <div class="filter-section">
+        <form method="GET" action="{{ url_for('admin.adoption_history') }}" class="filter-form">
+            <div class="filter-group">
+                <label for="status">Filtrar por status:</label>
+                <select name="status" id="status" class="form-control">
+                    <option value="">Todos</option>
+                    <option value="pendente" {% if status_filter == "pendente" %}selected{% endif %}>Pendente</option>
+                    <option value="aprovada" {% if status_filter == "aprovada" %}selected{% endif %}>Aprovada</option>
+                    <option value="rejeitada" {% if status_filter == "rejeitada" %}selected{% endif %}>Rejeitada</option>
+                    <option value="cancelada" {% if status_filter == "cancelada" %}selected{% endif %}>Cancelada</option>
+                </select>
+                <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+                <a href="{{ url_for('admin.adoption_history') }}" class="btn btn-secondary btn-sm">Limpar</a>
+            </div>
+        </form>
+    </div>
+
+    {% if adocoes %}
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Data Pedido</th>
+                    <th>Data Decisão</th>
+                    <th>Pet</th>
+                    <th>Adotante</th>
+                    <th>Status</th>
+                    <th>Detalhes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for adocao in adocoes %}
+                    <tr>
+                        <td data-label="Data Pedido">{{ adocao.data_pedido.strftime("%d/%m/%Y %H:%M") }}</td>
+                        <td data-label="Data Decisão">
+                            {% if adocao.data_decisao %}
+                                {{ adocao.data_decisao.strftime("%d/%m/%Y %H:%M") }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td data-label="Pet">
+                            {% if adocao.pet %}
+                                <a href="{{ url_for('pets.pet_details', pet_id=adocao.pet.id) }}" target="_blank">{{ adocao.pet.nome }}</a>
+                            {% else %}
+                                Pet não encontrado
+                            {% endif %}
+                        </td>
+                        <td data-label="Adotante">
+                            {% if adocao.adotante %}
+                                {{ adocao.adotante.nome_completo }}
+                                <br>
+                                <small>{{ adocao.adotante.email }}</small>
+                            {% else %}
+                                Adotante não encontrado
+                            {% endif %}
+                        </td>
+                        <td data-label="Status">
+                            <span class="status-badge status-{{ adocao.status }}">
+                                {{ adocao.status | capitalize }}
+                            </span>
+                        </td>
+                        <td data-label="Detalhes">
+                            <button type="button" class="btn btn-info btn-sm" 
+                                    onclick="showAdoptionDetails({{ adocao.id }}, '{{ adocao.pet.nome if adocao.pet else 'Pet não encontrado' }}', 
+                                    '{{ adocao.adotante.nome_completo if adocao.adotante else 'Adotante não encontrado' }}', 
+                                    '{{ adocao.status }}', 
+                                    '{{ adocao.data_pedido.strftime('%d/%m/%Y %H:%M') }}',
+                                    '{{ adocao.data_decisao.strftime('%d/%m/%Y %H:%M') if adocao.data_decisao else '-' }}')">
+                                <i class="bi bi-info-circle"></i> Ver
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-results">Nenhuma adoção encontrada com os filtros selecionados.</p>
+    {% endif %}
+</div>
+
+<!-- Modal para detalhes da adoção -->
+<div id="adoptionDetailsModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Detalhes da Adoção</h3>
+        <div class="modal-body">
+            <p><strong>Pet:</strong> <span id="modalPetName"></span></p>
+            <p><strong>Adotante:</strong> <span id="modalAdopterName"></span></p>
+            <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+            <p><strong>Data do Pedido:</strong> <span id="modalRequestDate"></span></p>
+            <p><strong>Data da Decisão:</strong> <span id="modalDecisionDate"></span></p>
+        </div>
+    </div>
+</div>
+
+<style>
+.admin-panel-container {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.admin-panel-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--blue-dark);
+}
+
+.filter-section {
+    background-color: var(--blue-lightest);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.filter-group label {
+    margin-right: 0.5rem;
+    font-weight: bold;
+}
+
+.filter-group select {
+    padding: 0.4rem;
+    border-radius: 4px;
+    border: 1px solid var(--grey-medium);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+}
+
+.admin-table th, .admin-table td {
+    border: 1px solid #eee;
+    padding: 0.8rem;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.admin-table th {
+    background-color: var(--blue-lightest);
+    font-weight: bold;
+}
+
+.admin-table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.3em 0.8em;
+    font-size: 0.85rem;
+    font-weight: bold;
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+}
+
+.status-pendente { background-color: var(--warning); color: #333; }
+.status-aprovada { background-color: var(--success); }
+.status-rejeitada { background-color: var(--danger); }
+.status-cancelada { background-color: var(--grey-dark); }
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+}
+
+.btn-info {
+    background-color: var(--info);
+    color: var(--text-dark);
+}
+
+.no-results {
+    text-align: center;
+    padding: 2rem;
+    color: var(--grey-dark);
+    font-style: italic;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+}
+
+.modal-body {
+    margin-top: 1rem;
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+    .admin-table, .admin-table thead, .admin-table tbody, .admin-table th, .admin-table td, .admin-table tr {
+        display: block;
+    }
+    
+    .admin-table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    
+    .admin-table tr {
+        border: 1px solid #ccc;
+        margin-bottom: 1rem;
+    }
+    
+    .admin-table td {
+        border: none;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+    }
+    
+    .admin-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+    }
+    
+    .filter-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .filter-group label {
+        margin-bottom: 0.5rem;
+    }
+    
+    .filter-group select,
+    .filter-group button,
+    .filter-group a {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+
+<script>
+// Modal functionality
+const modal = document.getElementById("adoptionDetailsModal");
+const span = document.getElementsByClassName("close")[0];
+
+function showAdoptionDetails(id, petName, adopterName, status, requestDate, decisionDate) {
+    document.getElementById("modalPetName").textContent = petName;
+    document.getElementById("modalAdopterName").textContent = adopterName;
+    document.getElementById("modalStatus").textContent = status.charAt(0).toUpperCase() + status.slice(1);
+    document.getElementById("modalRequestDate").textContent = requestDate;
+    document.getElementById("modalDecisionDate").textContent = decisionDate;
+    
+    modal.style.display = "block";
+}
+
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+{% endblock %}

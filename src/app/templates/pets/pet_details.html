@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="pet-details-container">
+    <div class="pet-image-column">
+        {% if pet.foto %}
+            <img src="{{ url_for('static', filename='uploads/' + pet.foto) }}" alt="Foto de {{ pet.nome }}" class="pet-details-image">
+        {% else %}
+            <img src="https://via.placeholder.com/400x300.png?text=Sem+Foto" alt="Sem foto" class="pet-details-image">
+        {% endif %}
+    </div>
+    <div class="pet-info-column">
+        <h1>{{ pet.nome }}</h1>
+        <span class="pet-status-badge status-{{ pet.status | lower | replace(" ", "-") }}">{{ pet.status }}</span>
+
+        <div class="pet-info-grid">
+            <p><strong>Espécie:</strong> {{ pet.especie }}</p>
+            <p><strong>Raça:</strong> {{ pet.raca }}</p>
+            <p><strong>Sexo:</strong> {{ pet.sexo }}</p>
+            <p><strong>Idade:</strong> {{ pet.idade }} meses</p>
+            <p><strong>Porte:</strong> {{ pet.porte }}</p>
+            <p><strong>Cadastro:</strong> {{ pet.data_cadastro.strftime("%d/%m/%Y") }}</p>
+        </div>
+
+        <h2>Descrição</h2>
+        <p class="pet-description">{{ pet.descricao }}</p>
+
+        <div class="pet-actions">
+            {% if current_user.is_authenticated %}
+                {# Lógica para botão de adoção - virá no fluxo de adoção #}
+                {% if pet.status == "disponível" %}
+                    {# Formulário para pedir adoção #}
+                    <form action="{{ url_for('adoptions.request_adoption', pet_id=pet.id) }}" method="post" style="display: inline;">
+                         {# Adicionar CSRF token se o form de adoção for WTForm #}
+                        <button type="submit" class="btn btn-primary">Quero Adotar!</button>
+                    </form>
+                {% elif pet.status == "em processo" %}
+                    <button class="btn btn-secondary" disabled>Processo de Adoção em Andamento</button>
+                {% else %}
+                     <button class="btn btn-secondary" disabled>Já Adotado</button>
+                {% endif %}
+            {% else %}
+                <p><a href="{{ url_for('auth.login', next=request.url) }}">Faça login</a> para solicitar a adoção.</p>
+            {% endif %}
+
+            {# Ações de Admin #}
+            {% if current_user.is_authenticated and current_user.is_admin %}
+                <a href="{{ url_for('pets.edit_pet', pet_id=pet.id) }}" class="btn btn-secondary">Editar</a>
+                <form action="{{ url_for('pets.delete_pet', pet_id=pet.id) }}" method="post" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja remover este pet?');">
+                    {# Adicionar CSRF token se usar WTForms para delete #}
+                    <button type="submit" class="btn btn-danger">Remover</button> {# Classe btn-danger a ser definida no CSS #}
+                </form>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+<style>
+.pet-details-container {
+    display: flex;
+    flex-wrap: wrap; /* Para telas menores */
+    gap: 2rem;
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.pet-image-column {
+    flex: 1;
+    min-width: 250px;
+}
+.pet-details-image {
+    width: 100%;
+    max-width: 400px; /* Limita tamanho máximo da imagem */
+    height: auto;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
+}
+.pet-info-column {
+    flex: 2;
+    min-width: 300px;
+}
+.pet-info-column h1 {
+    margin-bottom: 0.5rem;
+    display: inline-block; /* Para ficar ao lado do badge */
+    margin-right: 1rem;
+}
+.pet-status-badge {
+    display: inline-block;
+    padding: 0.3em 0.8em;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 15px;
+    color: white;
+    vertical-align: middle;
+}
+.status-disponível {
+    background-color: var(--success); /* Verde pastel */
+    color: #1B5E20; /* Texto verde escuro */
+}
+.status-em-processo {
+    background-color: var(--warning); /* Laranja pastel */
+    color: #795548; /* Texto marrom */
+}
+.status-adotado {
+    background-color: var(--grey-dark); /* Cinza */
+    color: white;
+}
+.pet-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.5rem 1rem;
+    margin: 1.5rem 0;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+.pet-info-grid p {
+    margin-bottom: 0;
+}
+.pet-description {
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+}
+.pet-actions {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.btn-danger {
+    background-color: var(--danger);
+    color: white;
+}
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+@media (max-width: 768px) {
+    .pet-details-container {
+        flex-direction: column;
+    }
+    .pet-details-image {
+        max-width: 100%;
+    }
+}
+</style>
+{% endblock %}

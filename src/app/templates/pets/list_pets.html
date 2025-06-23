@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="list-pets-container">
+    <h2>Encontre seu Novo Amigo!</h2>
+
+    {# Formulário de Filtros #}
+    <form method="GET" action="{{ url_for('pets.list_pets') }}" class="filter-form">
+        <div class="filter-grid">
+            <div class="form-group">
+                <label for="especie">Espécie:</label>
+                <select name="especie" id="especie" class="form-control">
+                    <option value="">Todas</option>
+                    {% for value, display in especie_choices %}
+                        <option value="{{ value }}" {% if current_filters.especie == value %}selected{% endif %}>{{ display }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="porte">Porte:</label>
+                <select name="porte" id="porte" class="form-control">
+                    <option value="">Todos</option>
+                    {% for value, display in porte_choices %}
+                        <option value="{{ value }}" {% if current_filters.porte == value %}selected{% endif %}>{{ display }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sexo">Sexo:</label>
+                <select name="sexo" id="sexo" class="form-control">
+                    <option value="">Todos</option>
+                    {% for value, display in sexo_choices %}
+                        <option value="{{ value }}" {% if current_filters.sexo == value %}selected{% endif %}>{{ display }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="idade_min">Idade Mín. (meses):</label>
+                <input type="number" name="idade_min" id="idade_min" min="1" value="{{ current_filters.idade_min if current_filters.idade_min is not none else '' }}" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="idade_max">Idade Máx. (meses):</label>
+                <input type="number" name="idade_max" id="idade_max" min="1" value="{{ current_filters.idade_max if current_filters.idade_max is not none else '' }}" class="form-control">
+            </div>
+            <div class="form-group filter-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Filtrar
+                </button>
+                <a href="{{ url_for('pets.list_pets') }}" class="btn btn-secondary">Limpar</a>
+            </div>
+        </div>
+    </form>
+
+    {# Adicionar botão para Admin adicionar novo pet #}
+    {% if current_user.is_authenticated and current_user.is_admin %}
+        <div class="admin-actions">
+            <a href="{{ url_for('pets.add_pet') }}" class="btn btn-success">+ Adicionar Novo Pet</a>
+        </div>
+    {% endif %}
+
+    {# Listagem de Pets #}
+    {% if pets %}
+        <div class="pet-list">
+            {% for pet in pets %}
+                <div class="pet-card">
+                    <a href="{{ url_for('pets.pet_details', pet_id=pet.id) }}">
+                        {% if pet.foto %}
+                            <img src="{{ url_for('static', filename='uploads/' + pet.foto) }}" alt="Foto de {{ pet.nome }}">
+                        {% else %}
+                            <img src="https://via.placeholder.com/300x180.png?text=Sem+Foto" alt="Sem foto">
+                        {% endif %}
+                    </a>
+                    <div class="pet-card-content">
+                        <h3><a href="{{ url_for('pets.pet_details', pet_id=pet.id) }}">{{ pet.nome }}</a></h3>
+                        <span class="pet-status-badge status-{{ pet.status | lower | replace(' ', '-') }}">{{ pet.status }}</span>
+                        <p>{{ pet.especie }} - {{ pet.raca }}</p>
+                        <p>{{ pet.sexo }}, {{ pet.idade }} meses, Porte {{ pet.porte }}</p>
+                        <p class="description">{{ pet.descricao | truncate(100) }}</p> {# Limita descrição no card #}
+                        
+                        {% if pet.status == "disponível" %}
+                            {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('pets.pet_details', pet_id=pet.id) }}" class="btn btn-primary">Quero Adotar!</a>
+                            {% else %}
+                                <a href="{{ url_for('auth.login', next=url_for('pets.pet_details', pet_id=pet.id)) }}" class="btn btn-primary">Faça Login para Adotar</a>
+                            {% endif %}
+                        {% elif pet.status == "em processo" %}
+                            <button class="btn btn-secondary" disabled>Em Processo de Adoção</button>
+                        {% else %}
+                            <button class="btn btn-secondary" disabled>Já Adotado</button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-results">Nenhum pet encontrado com os filtros selecionados. Tente ajustar sua busca!</p>
+    {% endif %}
+</div>
+
+<style>
+.list-pets-container h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--text-dark);
+}
+.filter-form {
+    background-color: var(--blue-lightest);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    align-items: end; /* Alinha itens na base */
+}
+.filter-form .form-group {
+    margin-bottom: 0;
+}
+.filter-form label {
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+.filter-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center; /* Alinha botões verticalmente */
+    padding-top: 1.3rem; /* Espaço acima dos botões */
+}
+.admin-actions {
+    text-align: right;
+    margin-bottom: 1.5rem;
+}
+.btn-success {
+    background-color: var(--success);
+    color: #1B5E20;
+}
+.btn-success:hover {
+    background-color: #A5D6A7;
+}
+.no-results {
+    text-align: center;
+    margin-top: 3rem;
+    font-style: italic;
+    color: #666;
+}
+.pet-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+.pet-card {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    display: flex;
+    flex-direction: column;
+}
+.pet-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 77, 64, 0.15);
+}
+.pet-card img {
+    width: 100%;
+    height: 200px; /* Fixed height for images */
+    object-fit: cover; /* Crop images nicely */
+}
+.pet-card-content {
+    padding: 1.5rem;
+    flex-grow: 1; /* Allow content to grow */
+    display: flex;
+    flex-direction: column;
+}
+.pet-card-content h3 {
+    font-family: var(--font-title);
+    font-size: 1.6em;
+    margin-bottom: 0.5rem;
+}
+.pet-card-content h3 a {
+    color: var(--text-dark);
+    text-decoration: none;
+}
+.pet-card-content h3 a:hover {
+    color: var(--blue-dark);
+}
+.pet-card-content .btn {
+    margin-top: auto; /* Push button to bottom */
+    align-self: flex-start; /* Align button left */
+}
+.pet-status-badge {
+    display: inline-block;
+    padding: 0.3em 0.8em;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 15px;
+    color: white;
+    vertical-align: middle;
+    margin-bottom: 0.8rem;
+}
+.status-disponível {
+    background-color: var(--success); /* Verde pastel */
+    color: #1B5E20; /* Texto verde escuro */
+}
+.status-em-processo {
+    background-color: var(--warning); /* Laranja pastel */
+    color: #795548; /* Texto marrom */
+}
+.status-adotado {
+    background-color: var(--grey-dark); /* Cinza */
+    color: white;
+}
+</style>
+
+{% endblock %}

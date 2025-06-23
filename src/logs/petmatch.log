@@ -1,0 +1,61 @@
+2025-06-23 15:15:31,422 INFO: PETMATCH startup [in /home/ubuntu/petmatch/src/app/__init__.py:90]
+2025-06-23 15:15:36,591 INFO: PETMATCH startup [in /home/ubuntu/petmatch/src/app/__init__.py:90]
+2025-06-23 15:15:45,926 INFO: PETMATCH startup [in /home/ubuntu/petmatch/src/app/__init__.py:90]
+2025-06-23 15:15:49,359 INFO: PETMATCH startup [in /home/ubuntu/petmatch/src/app/__init__.py:90]
+2025-06-23 15:15:52,325 INFO: PETMATCH startup [in /home/ubuntu/petmatch/src/app/__init__.py:90]
+2025-06-23 15:15:58,860 INFO: PETMATCH startup [in /home/ubuntu/petmatch/src/app/__init__.py:90]
+2025-06-23 15:15:58,861 INFO: Verificando necessidade de popular dados iniciais... [in /home/ubuntu/petmatch/src/app/models.py:70]
+2025-06-23 15:15:58,872 INFO: Criando usuário administrador padrão... [in /home/ubuntu/petmatch/src/app/models.py:75]
+2025-06-23 15:15:59,001 INFO: Usuário administrador criado com sucesso! [in /home/ubuntu/petmatch/src/app/models.py:85]
+2025-06-23 15:15:59,003 INFO: Banco de dados de pets vazio. Adicionando pets de exemplo... [in /home/ubuntu/petmatch/src/app/models.py:89]
+2025-06-23 15:15:59,006 INFO: 4 pets de exemplo adicionados com sucesso! [in /home/ubuntu/petmatch/src/app/models.py:153]
+2025-06-23 15:16:06,471 INFO: PETMATCH startup [in /home/ubuntu/petmatch/src/app/__init__.py:90]
+2025-06-23 15:18:06,283 ERROR: Exception on /pets/novo [GET] [in /usr/local/lib/python3.11/dist-packages/flask/app.py:875]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/dist-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/petmatch/src/app/pets/routes.py", line 16, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/petmatch/src/app/pets/routes.py", line 90, in add_pet
+    return render_template("pets/pet_form.html", title="Adicionar Novo Pet", form=form, legend="Adicionar Novo Pet")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/usr/local/lib/python3.11/dist-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/ubuntu/petmatch/src/app/templates/pets/pet_form.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/home/ubuntu/petmatch/src/app/templates/base.html", line 49, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/petmatch/src/app/templates/pets/pet_form.html", line 69, in block 'content'
+    {{ form.foto_url.label }} (Opcional)<br>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/dist-packages/jinja2/environment.py", line 490, in getattr
+    return getattr(obj, attribute)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'src.app.pets.forms.PetForm object' has no attribute 'foto_url'
+2025-06-23 15:18:48,859 INFO: PETMATCH startup [in /home/ubuntu/petmatch/src/app/__init__.py:90]
+2025-06-23 15:18:54,615 INFO: PETMATCH startup [in /home/ubuntu/petmatch/src/app/__init__.py:90]
+2025-06-23 15:23:43,331 INFO: PETMATCH startup [in /home/ubuntu/petmatch/src/app/__init__.py:90]
+2025-06-23 15:23:49,738 INFO: PETMATCH startup [in /home/ubuntu/petmatch/src/app/__init__.py:90]

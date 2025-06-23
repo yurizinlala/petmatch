@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="login-container">
+    <h1>Login</h1>
+    <p class="login-intro">Entre com sua conta para adotar pets e acompanhar seus pedidos de adoção.</p>
+    
+    <form method="POST" action="" id="loginForm">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            <label for="email">Email:</label>
+            {{ form.email(class="form-control", id="email") }}
+            {% for error in form.email.errors %}
+                <div class="form-error">{{ error }}</div>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group password-group">
+            <label for="password">Senha:</label>
+            <div class="password-input-container">
+                {{ form.password(class="form-control", id="password") }}
+                <button type="button" class="toggle-password" aria-label="Mostrar senha">
+                    <i class="bi bi-eye-fill" id="password-toggle-icon"></i>
+                </button>
+            </div>
+            {% for error in form.password.errors %}
+                <div class="form-error">{{ error }}</div>
+            {% endfor %}
+        </div>
+        
+        <div class="form-group form-check">
+            {{ form.remember_me(class="form-check-input", id="remember_me") }}
+            <label class="form-check-label" for="remember_me">Lembrar de mim</label>
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Entrar</button>
+        </div>
+        
+        <div class="form-footer">
+            <p>Não tem uma conta? <a href="{{ url_for('auth.register') }}">Registre-se</a></p>
+        </div>
+    </form>
+</div>
+
+<style>
+.login-container {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.login-intro {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--text-dark);
+}
+
+.password-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--grey-dark);
+    padding: 0;
+    font-size: 1.2rem;
+}
+
+.toggle-password:hover {
+    color: var(--blue-dark);
+}
+
+.form-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--grey-light);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar/ocultar senha
+    const togglePasswordButton = document.querySelector(".toggle-password");
+    if (togglePasswordButton) {
+        togglePasswordButton.addEventListener('click', function() {
+            const input = document.getElementById('password');
+            const icon = document.getElementById('password-toggle-icon');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('bi-eye-fill');
+                icon.classList.add('bi-eye-slash-fill');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('bi-eye-slash-fill');
+                icon.classList.add('bi-eye-fill');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
