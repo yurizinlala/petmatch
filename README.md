@@ -56,25 +56,32 @@ PETMATCH é uma plataforma web desenvolvida em Flask para conectar pessoas que d
    ```
    pip install -r requirements.txt
    ```
+   
+4. Configure o flask:
+   ```
+   set FLASK_APP=src/main.py
+   set FLASK_ENV=development
+   set FLASK_DEBUG=1
+   ```
 
-4. Configure o banco de dados:
+5. Configure o banco de dados:
    ```
    python -m flask db init
    python -m flask db migrate -m "Estrutura inicial"
    python -m flask db upgrade
    ```
 
-5. Popule o banco com dados iniciais:
+6. Popule o banco com dados iniciais:
    ```
    python -m flask seed
    ```
 
-6. Execute a aplicação:
+7. Execute a aplicação:
    ```
    python -m flask run
    ```
 
-7. Acesse a aplicação em seu navegador:
+8. Acesse a aplicação em seu navegador:
    ```
    http://127.0.0.1:5000
    ```
